@@ -1,31 +1,47 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <WiFiCredentials.h>
+#include <ConstantesPrivadas.h>
 #include <HTTPClient.h>
 
-const int sensorGPIO = 36;
-const char* ssid = SSID;
-const char* senha = SENHA;
+#define SENSOR_GPIO 36
 
-int valorSensor = 0;
+int valor_sensor;
 
-void conectarWifi(void) {
-    WiFi.begin(ssid, senha);
+void conectar_wifi(void)
+{
+    WiFi.begin(SSID, SENHA);
     Serial.println("Conectando");
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
         delay(500);
         Serial.println(".");
     }
-    Serial.println("Wifi conectado");
+    Serial.print("Wifi conectado, IP do ESP32: ");
+    Serial.println(WiFi.localIP());
 }
 
-void setup() {
+void setup()
+{
     Serial.begin(9600);
-    conectarWifi();
+    conectar_wifi();
+
+    WiFiClientSecure client;
+
+    client.setCACert(CERTIFICADO_SSL);
+
+    if (client.connect(URL_SERVER_API_NGROK, 443)) {
+        Serial.println("Conectado ao servidor");
+    }
 }
 
-void loop() {
-    // valorSensor = analogRead(sensorGPIO);
-    // // Serial.println(valorSensor);
-    // // delay(100);
+void loop()
+{
+    valor_sensor = analogRead(SENSOR_GPIO);
+    Serial.println(valor_sensor);
+    delay(100);
+
+    // if (WiFi.status() == WL_CONNECTED)
+    // {
+
+    // }
 }
