@@ -16,10 +16,14 @@ void conectar_wifi(void) {
     Serial.println("Wifi conectado");
 }
 
-void fazer_request() {
+void fazer_request(int valor_sensor) {
     HTTPClient http;
     http.begin(URL_SERVER);
-    int http_code = http.GET();
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    String valor = "sensor=" + String(valor_sensor);
+
+    int http_code = http.POST(valor);
 
     if (http_code > 0) {
         if (http_code == HTTP_CODE_OK) {
@@ -42,10 +46,8 @@ void setup() {
 }
 
 void loop() {
-    // valor_sensor = analogRead(sensor_gpio);
-    // Serial.println(valor_sensor);
-    // delay(100);
+    valor_sensor = analogRead(sensor_gpio);
+    fazer_request(valor_sensor);
 
-    fazer_request();
     delay(1000);
 }
