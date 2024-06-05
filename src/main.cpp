@@ -1,16 +1,13 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <WiFiCredentials.h>
+#include <ConstantesPrivadas.h>
 #include <HTTPClient.h>
 
-const int sensorGPIO = 36;
-const char* ssid = SSID;
-const char* senha = SENHA;
+const int sensor_gpio = 36;
+int valor_sensor = 0;
 
-int valorSensor = 0;
-
-void conectarWifi(void) {
-    WiFi.begin(ssid, senha);
+void conectar_wifi(void) {
+    WiFi.begin(SSID, SENHA);
     Serial.println("Conectando");
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
@@ -21,11 +18,11 @@ void conectarWifi(void) {
 
 void setup() {
     Serial.begin(9600);
-    conectarWifi();
+    conectar_wifi();
 }
 
 void loop() {
-    // valorSensor = analogRead(sensorGPIO);
-    // // Serial.println(valorSensor);
+    // valor_sensor = analogRead(sensor_gpio);
+    // // Serial.println(valor_sensor);
     // // delay(100);
 }
