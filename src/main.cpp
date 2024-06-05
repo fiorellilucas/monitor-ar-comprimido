@@ -3,12 +3,10 @@
 #include <ConstantesPrivadas.h>
 #include <HTTPClient.h>
 
-#define SENSOR_GPIO 36
+const int sensor_gpio = 36;
+int valor_sensor = 0;
 
-int valor_sensor;
-
-void conectar_wifi(void)
-{
+void conectar_wifi(void) {
     WiFi.begin(SSID, SENHA);
     Serial.println("Conectando");
     while (WiFi.status() != WL_CONNECTED)
@@ -20,28 +18,38 @@ void conectar_wifi(void)
     Serial.println(WiFi.localIP());
 }
 
-void setup()
-{
-    Serial.begin(9600);
-    conectar_wifi();
+void fazer_request(int valor_sensor) {
+    HTTPClient http;
+    http.begin(URL_SERVER);
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    WiFiClientSecure client;
+    String valor = "sensor=" + String(valor_sensor);
 
-    client.setCACert(CERTIFICADO_SSL);
+    int http_code = http.POST(valor);
 
-    if (client.connect(URL_SERVER_API_NGROK, 443)) {
-        Serial.println("Conectado ao servidor");
+    if (http_code > 0) {
+        if (http_code == HTTP_CODE_OK) {
+            Serial.println(http.getString());
+        }
+        else {
+            Serial.println(http_code);
+        }
     }
+    else {
+        Serial.println(http.errorToString(http_code).c_str());
+    }
+    
+    http.end();
 }
 
-void loop()
-{
-    valor_sensor = analogRead(SENSOR_GPIO);
-    Serial.println(valor_sensor);
-    delay(100);
+void setup() {
+    Serial.begin(9600);
+    conectar_wifi();
+}
 
-    // if (WiFi.status() == WL_CONNECTED)
-    // {
+void loop() {
+    valor_sensor = analogRead(sensor_gpio);
+    fazer_request(valor_sensor);
 
-    // }
+    delay(1000);
 }
